@@ -77,7 +77,7 @@ class A_Star:
             if not self.open:
                 return
             #获取F值最小的节点
-            idx, p = self.get_best()
+            idx, p = self.get_best1()
             #找到路径，生成路径，返回
             if self.is_target(p):
                 self.make_path(p)
@@ -106,14 +106,20 @@ class A_Star:
                 bv = value
                 bi = idx
         return bi, best
+
+    def get_best1(self):
+        min_point = min(self.open, key=lambda n:self.get_dist(n))
+        idx = self.open.index(min_point)
+        return idx, min_point
         
     def get_dist(self, i):
         # F = G + H
         # G 为已经走过的路径长度， H为估计还要走多远
         # 这个公式就是A*算法的精华了。
-        return i.dist + math.sqrt(
-            (self.e_x-i.x)*(self.e_x-i.x)
-            + (self.e_y-i.y)*(self.e_y-i.y))*1.2
+        #return i.dist + math.sqrt(
+            #(self.e_x-i.x)*(self.e_x-i.x)
+            #+ (self.e_y-i.y)*(self.e_y-i.y))*1.2
+        return i.dist + abs(self.e_x-i.x)+abs(self.e_y-i.y)
         
     def extend_round(self, p):
         #可以从8个方向走
@@ -137,10 +143,7 @@ class A_Star:
             if i != -1:
                 #新节点在开放列表
                 if self.open[i].dist > node.dist:
-                    #现在的路径到比以前到这个节点的路径更好~
-                    #则使用现在的路径
-                    self.open[i].parent = p
-                    self.open[i].dist = node.dist
+                    self.open[i] = node
                 continue
             self.open.append(node)
             
